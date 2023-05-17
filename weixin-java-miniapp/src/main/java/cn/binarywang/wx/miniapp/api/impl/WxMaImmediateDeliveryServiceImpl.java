@@ -9,10 +9,14 @@ import cn.binarywang.wx.miniapp.bean.delivery.AddOrderResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.BindAccountResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.CancelOrderRequest;
 import cn.binarywang.wx.miniapp.bean.delivery.CancelOrderResponse;
+import cn.binarywang.wx.miniapp.bean.delivery.FollowWaybillRequest;
+import cn.binarywang.wx.miniapp.bean.delivery.FollowWaybillResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.GetOrderRequest;
 import cn.binarywang.wx.miniapp.bean.delivery.GetOrderResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.MockUpdateOrderRequest;
 import cn.binarywang.wx.miniapp.bean.delivery.MockUpdateOrderResponse;
+import cn.binarywang.wx.miniapp.bean.delivery.QueryFollowTraceRequest;
+import cn.binarywang.wx.miniapp.bean.delivery.QueryFollowTraceResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.QueryWaybillTraceRequest;
 import cn.binarywang.wx.miniapp.bean.delivery.QueryWaybillTraceResponse;
 import cn.binarywang.wx.miniapp.bean.delivery.TraceWaybillRequest;
@@ -32,6 +36,8 @@ import me.chanjar.weixin.common.util.json.GsonParser;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import static me.chanjar.weixin.common.api.WxConsts.ERR_CODE;
+
 /**
  * 微信小程序即时配送服务.
  * <pre>
@@ -40,15 +46,10 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Luo
  * @version 1.0
- * @date 2021-10-13 16:40
+ * created on  2021-10-13 16:40
  */
 @RequiredArgsConstructor
 public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliveryService {
-
-  /**
-   * 微信响应码.
-   */
-  public static final String ERR_CODE = "errcode";
 
   /**
    * 顺丰同城响应码.
@@ -94,6 +95,7 @@ public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliverySe
    */
   @Override
   public AddOrderResponse addOrder(final AddOrderRequest request) throws WxErrorException {
+    request.getDeliverySign();
     return this.parse(this.wxMaService.post(WxMaApiUrlConstants.InstantDelivery.PlaceAnOrder.ADD_ORDER, request),
       AddOrderResponse.class);
   }
@@ -111,6 +113,7 @@ public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliverySe
    */
   @Override
   public GetOrderResponse getOrder(final GetOrderRequest request) throws WxErrorException {
+    request.getDeliverySign();
     return this.parse(this.wxMaService.post(WxMaApiUrlConstants.InstantDelivery.GET_ORDER, request),
       GetOrderResponse.class);
   }
@@ -127,6 +130,7 @@ public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliverySe
    */
   @Override
   public CancelOrderResponse cancelOrder(final CancelOrderRequest request) throws WxErrorException {
+    request.getDeliverySign();
     return this.parse(this.wxMaService.post(WxMaApiUrlConstants.InstantDelivery.Cancel.CANCEL_ORDER, request),
       CancelOrderResponse.class);
   }
@@ -143,6 +147,7 @@ public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliverySe
    */
   @Override
   public AbnormalConfirmResponse abnormalConfirm(final AbnormalConfirmRequest request) throws WxErrorException {
+    request.getDeliverySign();
     return this.parse(this.wxMaService.post(WxMaApiUrlConstants.InstantDelivery.Cancel.ABNORMAL_CONFIRM, request),
       AbnormalConfirmResponse.class);
   }
@@ -180,6 +185,28 @@ public class WxMaImmediateDeliveryServiceImpl implements WxMaImmediateDeliverySe
     QueryWaybillTraceRequest request) throws WxErrorException {
     String responseContent = this.wxMaService.post(InstantDelivery.QUERY_WAYBILL_TRACE_URL, request);
     QueryWaybillTraceResponse response = QueryWaybillTraceResponse.fromJson(responseContent);
+    if (response.getErrcode() == -1) {
+      throw new WxErrorException(WxError.fromJson(responseContent, WxType.MiniApp));
+    }
+    return response;
+  }
+
+  @Override
+  public FollowWaybillResponse followWaybill(
+    FollowWaybillRequest request) throws WxErrorException {
+    String responseContent = this.wxMaService.post(InstantDelivery.FOLLOW_WAYBILL_URL, request);
+    FollowWaybillResponse response = FollowWaybillResponse.fromJson(responseContent);
+    if (response.getErrcode() == -1) {
+      throw new WxErrorException(WxError.fromJson(responseContent, WxType.MiniApp));
+    }
+    return response;
+  }
+
+  @Override
+  public QueryFollowTraceResponse queryFollowTrace(
+    QueryFollowTraceRequest request) throws WxErrorException  {
+    String responseContent = this.wxMaService.post(InstantDelivery.QUERY_FOLLOW_TRACE_URL, request);
+    QueryFollowTraceResponse response = QueryFollowTraceResponse.fromJson(responseContent);
     if (response.getErrcode() == -1) {
       throw new WxErrorException(WxError.fromJson(responseContent, WxType.MiniApp));
     }

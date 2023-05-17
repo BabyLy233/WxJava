@@ -305,6 +305,20 @@ public interface WxPayService {
   MarketingBusiFavorService getMarketingBusiFavorService();
 
   /**
+   * 获取商家转账到零钱服务类
+   *
+   * @return the merchant transfer service
+   */
+  MerchantTransferService getMerchantTransferService();
+
+  /**
+   * 获取品牌红包商家转账到零钱服务类
+   *
+   * @return the brand merchant transfer service
+   */
+  BrandMerchantTransferService getBrandMerchantTransferService();
+
+  /**
    * 设置企业付款服务类，允许开发者自定义实现类.
    *
    * @param entPayService the ent pay service
@@ -1185,7 +1199,7 @@ public interface WxPayService {
   /**
    * <pre>
    * 获取仿真测试系统的验签密钥.
-   * 请求Url： https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey
+   * 请求Url： https://api.mch.weixin.qq.com/xdc/apiv2getsignkey/sign/getsignkey
    * 是否需要证书： 否
    * 请求方式： POST
    * 文档地址：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_1
@@ -1352,7 +1366,22 @@ public interface WxPayService {
 
   /**
    * 获取银行组件服务
-   * @return  银行组件服务
+   *
+   * @return 银行组件服务
    */
   BankService getBankService();
+
+  /**
+   * 获取商家转账到零钱服务类.
+   *
+   * @return the transfers service
+   */
+  TransferService getTransferService();
+
+  /**
+   * 获取服务商支付分服务类
+   * @return the partner pay score service
+   */
+  PartnerPayScoreService getPartnerPayScoreService();
+
 }
